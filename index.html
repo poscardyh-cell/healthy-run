@@ -3,122 +3,189 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-  <title>健康节奏 RUN — 画布可玩低配版</title>
+  <title>健康节奏 RUN — RPG 里程版（预览）</title>
   <style>
-    :root{--bg:#eaf6f1;--panel:#ffffff;--accent:#2fb86a;--muted:#6e7b74}
-    html,body{height:100%;margin:0;font-family:PingFang SC,Helvetica,Arial}
-    .wrap{min-height:100%;display:flex;flex-direction:column;align-items:center;background:linear-gradient(180deg,var(--bg),#dff0e8);padding:12px}
-    .stage{width:360px;max-width:94vw;height:600px;background:var(--panel);border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.12);overflow:hidden;position:relative}
-    .top{height:56px;display:flex;align-items:center;justify-content:space-between;padding:8px 12px}
-    .logo{font-weight:700;color:var(--accent)}
-    .badge{background:#f6fbf8;padding:6px 10px;border-radius:10px;font-size:13px}
-    .playarea{position:relative;left:0;right:0;top:56px;height:444px;background:linear-gradient(180deg,#cff5dc,#b6efca)}
-    .ground{position:absolute;left:0;right:0;bottom:0;height:110px;background:linear-gradient(180deg,#7fd292,#6fc686)}
-    .runner{position:absolute;width:56px;height:56px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;box-shadow:0 6px 14px rgba(0,0,0,.12);left:150px;top:360px}
-    .entity{position:absolute;width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:20px}
-    .good{background:#e9fff0;border:2px solid #c7f0d1}
-    .bad{background:#fff0f0;border:2px solid #ffc6c6}
-    .panel{position:absolute;left:10px;right:10px;bottom:12px;padding:8px;background:rgba(255,255,255,.92);border-radius:10px;display:flex;align-items:center;justify-content:space-between}
-    .btn{background:var(--accent);color:#fff;padding:8px 12px;border-radius:10px;border:none;font-weight:600}
+    :root{--bg:#f3faf6;--card:#ffffff;--accent:#2fb86a;--muted:#6b7a72}
+    html,body{height:100%;margin:0;font-family:PingFang SC,Helvetica,Arial;background:linear-gradient(180deg,#eaf6f1,#dff0e8)}
+    .wrap{display:flex;flex-direction:column;align-items:center;padding:12px}
+    .stage{width:360px;max-width:94vw;background:var(--card);border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.12);overflow:hidden}
+    .header{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #eef6ef}
+    .logo{font-weight:800;color:var(--accent)}
+    .meta{font-size:13px;color:var(--muted)}
+    .hero{height:220px;background:linear-gradient(180deg,#d7f6e2,#bfeeda);position:relative}
+    .parallax{position:absolute;left:0;right:0;top:0;bottom:0;overflow:hidden}
+    .runner{position:absolute;left:150px;top:140px;width:64px;height:64px;border-radius:10px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 8px 20px rgba(0,0,0,.12)}
+    .stats{display:flex;justify-content:space-around;padding:10px 8px;background:#fff;border-top:1px solid #eef6ef}
+    .stat{display:flex;flex-direction:column;align-items:center}
+    .stat .num{font-weight:700;color:#333}
+    .controls{padding:12px;background:#fff}
+    .panel{background:#fff;padding:12px;border-top:1px solid #eef6ef}
+    .progress{height:10px;background:#f0fbf2;border-radius:6px;overflow:hidden}
+    .bar{height:100%;background:linear-gradient(90deg,var(--accent),#4bd07d);width:0%}
+    .btn{background:var(--accent);color:#fff;padding:10px 14px;border-radius:10px;border:none;font-weight:700}
     .small{font-size:12px;color:var(--muted)}
-    .hint{position:absolute;right:8px;top:64px;background:rgba(255,255,255,.9);padding:6px;border-radius:8px;font-size:12px}
+    .map{padding:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .item{background:#f7fffa;padding:8px;border-radius:8px;border:1px solid #e6f6ea}
+    footer{padding:8px;text-align:center;color:var(--muted);font-size:12px}
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="stage" id="stage">
-      <div class="top">
-        <div class="logo">健康节奏 RUN — 低配试玩</div>
-        <div class="badge" id="energy">能量: 0</div>
+      <div class="header">
+        <div class="logo">健康节奏 RUN</div>
+        <div class="meta">Lv <span id="level">1</span> · 总里程 <span id="totalKm">0</span> km</div>
       </div>
-      <div class="playarea" id="area">
-        <div class="hint">触屏：左右滑动 / 上下滑动</div>
-        <div id="runner" class="runner">🏃</div>
-        <div id="e0" class="entity good" style="left:80px;top:-60px;display:none">💧</div>
-        <div id="e1" class="entity bad" style="left:150px;top:-60px;display:none">🍔</div>
-        <div id="e2" class="entity good" style="left:220px;top:-60px;display:none">🥗</div>
-        <div class="ground"></div>
-      </div>
-      <div class="panel">
-        <div>
-          <div class="small">今日进度</div>
-          <div id="progress">0 / 1000 米</div>
+
+      <div class="hero">
+        <div class="parallax" id="parallax">
+          <div class="runner" id="runner">🏃</div>
         </div>
-        <div><button id="start" class="btn">开始</button></div>
       </div>
+
+      <div class="stats">
+        <div class="stat"><div class="small">今日里程</div><div class="num" id="today">0 m</div></div>
+        <div class="stat"><div class="small">EXP</div><div class="num" id="exp">0 / 100</div></div>
+        <div class="stat"><div class="small">能量</div><div class="num" id="energy">0</div></div>
+      </div>
+
+      <div class="controls">
+        <div style="display:flex;gap:8px;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <button class="btn" id="startBtn">开始跑步</button>
+          <button class="btn" id="syncBtn" style="background:#5b8aee">计步同步</button>
+        </div>
+        <div class="small">玩法：点击“开始跑步”后，模拟跑步会开始累积里程。里程会兑换 EXP、提升等级并获得能量。你也可以手动“合成装备”提升每次跑步的效率。</div>
+      </div>
+
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <div class="small">里程进度（解锁地图）</div>
+          <div class="small">目标：1000 m 解锁新区域</div>
+        </div>
+        <div class="progress" style="margin-bottom:8px"><div class="bar" id="bar"></div></div>
+        <div class="map" id="map"></div>
+        <div style="display:flex;gap:8px;margin-top:10px">
+          <button class="btn" id="shopBtn" style="flex:1;background:#f39c12">装备商店</button>
+          <button class="btn" id="claimBtn" style="flex:1;background:#27ae60">兑换能量</button>
+        </div>
+      </div>
+
+      <footer>（演示版）里程、等级、装备数据会保存在本地。可用于活动转换与品牌化延展。</footer>
     </div>
   </div>
-<script>
-(function(){
-  const lanesX=[80,150,220];
-  const runner=document.getElementById('runner');
-  const e0=document.getElementById('e0');
-  const e1=document.getElementById('e1');
-  const e2=document.getElementById('e2');
-  const entities=[e0,e1,e2];
-  const energyEl=document.getElementById('energy');
-  const progressEl=document.getElementById('progress');
-  const startBtn=document.getElementById('start');
-  let lane=1,running=false,health=100,distance=0,energy=0,tickId=null,spawnCounter=0;
-  function setRunnerLane(i){lane=Math.max(0,Math.min(2,i));runner.style.left=lanesX[lane]+'px';}
-  setRunnerLane(1);
-  function hideEntity(el){el.style.display='none';el.dataset.active='0';}
-  function showEntity(el,isGood){el.style.display='flex';el.dataset.active='1';el.dataset.good=isGood?'1':'0';el.style.top='-60px';}
-  function spawnRandom(){
-    for(let el of entities){
-      if(el.dataset.active!=='1'){
-        const laneIdx=Math.floor(Math.random()*3);
-        const isGood=Math.random()<0.6;
-        el.className='entity '+(isGood?'good':'bad');
-        el.textContent=isGood?(['💧','🥗','☀️'][Math.floor(Math.random()*3)]):(['🍔','🍟','🍰'][Math.floor(Math.random()*3)]);
-        el.style.left=lanesX[laneIdx]+'px';
-        showEntity(el,isGood);
-        el.dataset.lane=laneIdx;
-        break;
+
+  <script>
+  // RPG 跑步核心逻辑（单文件可玩版）
+  (function(){
+    // persistent storage keys
+    const STORE_PREFIX = 'hrun_v1_';
+    const $ = id=>document.getElementById(id);
+    // player state
+    let state = {
+      totalMeters: Number(localStorage.getItem(STORE_PREFIX+'totalMeters')||0),
+      level: Number(localStorage.getItem(STORE_PREFIX+'level')||1),
+      exp: Number(localStorage.getItem(STORE_PREFIX+'exp')||0),
+      energy: Number(localStorage.getItem(STORE_PREFIX+'energy')||0),
+      items: JSON.parse(localStorage.getItem(STORE_PREFIX+'items')||'[]')
+    };
+
+    // UI refs
+    const runner = $('runner');
+    const levelEl = $('level');
+    const totalKmEl = $('totalKm');
+    const todayEl = $('today');
+    const expEl = $('exp');
+    const energyEl = $('energy');
+    const bar = $('bar');
+    const mapEl = $('map');
+
+    // runtime
+    let running = false;
+    let sessionMeters = 0;
+    let tickId = null;
+
+    function saveState(){
+      localStorage.setItem(STORE_PREFIX+'totalMeters', state.totalMeters);
+      localStorage.setItem(STORE_PREFIX+'level', state.level);
+      localStorage.setItem(STORE_PREFIX+'exp', state.exp);
+      localStorage.setItem(STORE_PREFIX+'energy', state.energy);
+      localStorage.setItem(STORE_PREFIX+'items', JSON.stringify(state.items));
+    }
+
+    function ui(){
+      levelEl.textContent = state.level;
+      totalKmEl.textContent = Math.floor(state.totalMeters/1000);
+      todayEl.textContent = sessionMeters + ' m';
+      expEl.textContent = state.exp + ' / ' + (100 + (state.level-1)*30);
+      energyEl.textContent = state.energy;
+      // progress to next map (use 1000m per map)
+      const pct = Math.min(1, (sessionMeters % 1000)/1000);
+      bar.style.width = (pct*100)+'%';
+      // map boxes
+      mapEl.innerHTML = '';
+      const unlocked = Math.floor(state.totalMeters/1000) + (sessionMeters>=1000?1:0);
+      for(let i=0;i<4;i++){
+        const div = document.createElement('div'); div.className='item';
+        div.textContent = (i<=unlocked? '🔓':'🔒') + ' 区域 ' + (i+1);
+        mapEl.appendChild(div);
       }
     }
-  }
-  function moveEntities(){
-    entities.forEach(el=>{
-      if(el.dataset.active==='1'){
-        const y=parseFloat(el.style.top||'-60');
-        const ny=y+28;
-        el.style.top=ny+'px';
-        if(ny>=340 && ny<=420){
-          if(Number(el.dataset.lane)==lane){
-            if(el.dataset.good==='1'){energy+=10;health=Math.min(100,health+6);}
-            else health-=20;
-            hideEntity(el);
-          }
+
+    function addMeters(m){
+      sessionMeters += m;
+      state.totalMeters += m;
+      // convert meters to EXP: 100m -> 1 exp
+      const gainedExp = Math.floor(m/100);
+      state.exp += gainedExp;
+      // energy gain: 50m -> 1 energy
+      state.energy += Math.floor(m/50);
+      // level up
+      const need = 100 + (state.level-1)*30;
+      while(state.exp >= need){ state.exp -= need; state.level += 1; }
+      saveState(); ui();
+    }
+
+    // simulate running: each tick adds meters. tick every 600ms
+    function startRun(){ if(running) return; running=true; sessionMeters=0; tickId = setInterval(()=>{ addMeters(60); runner.style.transform = 'translateY(-6px)'; setTimeout(()=>runner.style.transform='translateY(0)',200); }, 600); }
+    function stopRun(){ if(!running) return; running=false; clearInterval(tickId); tickId=null; alert('本次跑步结束：+'+sessionMeters+' m，已获得 EXP 与能量。'); saveState(); ui(); }
+
+    // shop: simple equipment that increases meters per tick
+    const shop = [ {id:'shoes1',name:'入门跑鞋',cost:50,bonus:10}, {id:'shoes2',name:'进阶跑鞋',cost:150,bonus:20} ];
+    function openShop(){
+      let html = shop.map(s=>`【${s.name}】花费 ${s.cost} 能量，效果 +${s.bonus}m/次 <button data-id="${s.id}">购买</button>`).join('
+');
+      const wrapper = document.createElement('div'); wrapper.style.padding='12px'; wrapper.style.background='#fff'; wrapper.style.borderRadius='10px'; wrapper.style.boxShadow='0 8px 24px rgba(0,0,0,.12)';
+      wrapper.innerHTML = html;
+      document.body.appendChild(wrapper);
+      wrapper.addEventListener('click', e=>{
+        if(e.target.tagName==='BUTTON'){
+          const id = e.target.dataset.id; const s = shop.find(x=>x.id===id);
+          if(state.energy >= s.cost){ state.energy -= s.cost; state.items.push(s); alert('购买成功：'+s.name); saveState(); ui(); } else alert('能量不足');
         }
-        if(ny>520) hideEntity(el);
-      }
-    });
-  }
-  function tick(){
-    if(!running) return;
-    spawnCounter++;
-    if(spawnCounter%6===0) spawnRandom();
-    moveEntities();
-    distance+=40;
-    progressEl.textContent=distance+' / 1000 米';
-    energyEl.textContent='能量: '+energy;
-    if(health<=0) stopRun('体力耗尽');
-    if(distance>=1000) stopRun('达成目标');
-  }
-  function startRun(){if(running)return;running=true;health=100;distance=0;energy=0;spawnCounter=0;entities.forEach(hideEntity);tickId=setInterval(tick,220);}
-  function stopRun(reason){running=false;clearInterval(tickId);tickId=null;progressEl.textContent=distance+' / 1000 米 — '+reason;energyEl.textContent='能量: '+energy+'（本次）';}
-  let sx=0,sy=0;
-  const area=document.getElementById('area');
-  area.addEventListener('touchstart',e=>{const t=e.changedTouches[0];sx=t.clientX;sy=t.clientY;});
-  area.addEventListener('touchend',e=>{const t=e.changedTouches[0],dx=t.clientX-sx,dy=t.clientY-sy;
-    if(Math.abs(dx)>Math.abs(dy)&&Math.abs(dx)>20){if(dx>0)setRunnerLane(lane+1);else setRunnerLane(lane-1);}
-    else if(Math.abs(dy)>20){if(dy<0){runner.style.top='300px';setTimeout(()=>runner.style.top='360px',180);}else{runner.style.top='380px';setTimeout(()=>runner.style.top='360px',120);}}
-  });
-  document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')setRunnerLane(lane-1);if(e.key==='ArrowRight')setRunnerLane(lane+1);if(e.key==='ArrowUp'){runner.style.top='300px';setTimeout(()=>runner.style.top='360px',180);}if(e.key==='ArrowDown'){runner.style.top='380px';setTimeout(()=>runner.style.top='360px',120);}});
-  startBtn.addEventListener('click',()=>{if(!running)startRun();else stopRun('手动停止');});
-  entities.forEach(hideEntity);
-})();
-</script>
+      });
+      setTimeout(()=>document.body.removeChild(wrapper),8000);
+    }
+
+    // sync steps (mock) — user can input steps to convert
+    function syncSteps(){
+      const v = prompt('输入要同步的步数（示例：1000 步 ≈ 800 米）','1000');
+      const steps = Number(v)||0; const meters = Math.round(steps*0.8);
+      addMeters(meters);
+      alert('同步成功：' + meters + ' m 已加入里程');
+    }
+
+    // claim convert energy -> coupon (demo)
+    function claim(){ if(state.energy >= 100){ state.energy -= 100; alert('兑换成功：获得 1 张折扣券（示例）'); saveState(); ui(); } else alert('能量不足 100'); }
+
+    // attach events
+    $('startBtn').addEventListener('click', ()=>{ if(!running) startRun(); else stopRun(); });
+    $('shopBtn').addEventListener('click', openShop);
+    $('syncBtn').addEventListener('click', syncSteps);
+    $('claimBtn').addEventListener('click', claim);
+
+    // init
+    ui();
+  })();
+  </script>
 </body>
 </html>
